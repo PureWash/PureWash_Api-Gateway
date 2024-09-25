@@ -4,7 +4,7 @@
 // - protoc             v5.28.0
 // source: company.proto
 
-package pure_wash
+package carpet_service
 
 import (
 	context "context"
@@ -27,7 +27,6 @@ type CompanyServiceClient interface {
 	UpdateCompany(ctx context.Context, in *Company, opts ...grpc.CallOption) (*Company, error)
 	DeleteCompany(ctx context.Context, in *PrimaryKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetCompany(ctx context.Context, in *PrimaryKey, opts ...grpc.CallOption) (*Company, error)
-	GetAllCompany(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*CompaniesResponse, error)
 }
 
 type companyServiceClient struct {
@@ -74,15 +73,6 @@ func (c *companyServiceClient) GetCompany(ctx context.Context, in *PrimaryKey, o
 	return out, nil
 }
 
-func (c *companyServiceClient) GetAllCompany(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*CompaniesResponse, error) {
-	out := new(CompaniesResponse)
-	err := c.cc.Invoke(ctx, "/carpet_wash_service.CompanyService/GetAllCompany", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // CompanyServiceServer is the server API for CompanyService service.
 // All implementations must embed UnimplementedCompanyServiceServer
 // for forward compatibility
@@ -91,7 +81,6 @@ type CompanyServiceServer interface {
 	UpdateCompany(context.Context, *Company) (*Company, error)
 	DeleteCompany(context.Context, *PrimaryKey) (*emptypb.Empty, error)
 	GetCompany(context.Context, *PrimaryKey) (*Company, error)
-	GetAllCompany(context.Context, *GetListRequest) (*CompaniesResponse, error)
 	mustEmbedUnimplementedCompanyServiceServer()
 }
 
@@ -110,9 +99,6 @@ func (UnimplementedCompanyServiceServer) DeleteCompany(context.Context, *Primary
 }
 func (UnimplementedCompanyServiceServer) GetCompany(context.Context, *PrimaryKey) (*Company, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCompany not implemented")
-}
-func (UnimplementedCompanyServiceServer) GetAllCompany(context.Context, *GetListRequest) (*CompaniesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllCompany not implemented")
 }
 func (UnimplementedCompanyServiceServer) mustEmbedUnimplementedCompanyServiceServer() {}
 
@@ -199,24 +185,6 @@ func _CompanyService_GetCompany_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CompanyService_GetAllCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetListRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CompanyServiceServer).GetAllCompany(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/carpet_wash_service.CompanyService/GetAllCompany",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CompanyServiceServer).GetAllCompany(ctx, req.(*GetListRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // CompanyService_ServiceDesc is the grpc.ServiceDesc for CompanyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -239,10 +207,6 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCompany",
 			Handler:    _CompanyService_GetCompany_Handler,
-		},
-		{
-			MethodName: "GetAllCompany",
-			Handler:    _CompanyService_GetAllCompany_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

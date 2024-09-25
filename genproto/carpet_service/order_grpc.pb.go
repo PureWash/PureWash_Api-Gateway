@@ -4,7 +4,7 @@
 // - protoc             v5.28.0
 // source: order.proto
 
-package pure_wash
+package carpet_service
 
 import (
 	context "context"

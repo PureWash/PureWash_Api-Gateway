@@ -39,4 +39,4 @@ pull-proto-module:
 update-proto-module:
 	git submodule update --remote --merge
 swag-init:
-	swag init -g api/router.go -o api/docs
+	swag init -g internal/controller/handlers/server.go -o api/openapi  --outputTypes "go,json" --overridesFile .swaggo

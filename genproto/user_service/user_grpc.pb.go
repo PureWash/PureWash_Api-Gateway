@@ -4,7 +4,7 @@
 // - protoc             v5.28.0
 // source: user.proto
 
-package pure_wash
+package user_service
 
 import (
 	context "context"
@@ -23,10 +23,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
+	CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UsersResponse, error)
 	UpdateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	DeleteUser(ctx context.Context, in *PrimaryKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GetUser(ctx context.Context, in *PrimaryKey, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GetAllUsers(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetUser(ctx context.Context, in *PrimaryKey, opts ...grpc.CallOption) (*User, error)
+	GetAllUsers(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*User, error)
 }
 
 type userServiceClient struct {
@@ -35,6 +36,15 @@ type userServiceClient struct {
 
 func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
+}
+
+func (c *userServiceClient) CreateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*UsersResponse, error) {
+	out := new(UsersResponse)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/CreateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userServiceClient) UpdateUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error) {
@@ -55,8 +65,8 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *PrimaryKey, opts
 	return out, nil
 }
 
-func (c *userServiceClient) GetUser(ctx context.Context, in *PrimaryKey, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *userServiceClient) GetUser(ctx context.Context, in *PrimaryKey, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user_service.UserService/GetUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -64,8 +74,8 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *PrimaryKey, opts ..
 	return out, nil
 }
 
-func (c *userServiceClient) GetAllUsers(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *userServiceClient) GetAllUsers(ctx context.Context, in *GetListRequest, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
 	err := c.cc.Invoke(ctx, "/user_service.UserService/GetAllUsers", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -77,10 +87,11 @@ func (c *userServiceClient) GetAllUsers(ctx context.Context, in *GetListRequest,
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
+	CreateUser(context.Context, *User) (*UsersResponse, error)
 	UpdateUser(context.Context, *User) (*User, error)
 	DeleteUser(context.Context, *PrimaryKey) (*emptypb.Empty, error)
-	GetUser(context.Context, *PrimaryKey) (*emptypb.Empty, error)
-	GetAllUsers(context.Context, *GetListRequest) (*emptypb.Empty, error)
+	GetUser(context.Context, *PrimaryKey) (*User, error)
+	GetAllUsers(context.Context, *GetListRequest) (*User, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -88,16 +99,19 @@ type UserServiceServer interface {
 type UnimplementedUserServiceServer struct {
 }
 
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *User) (*UsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
 func (UnimplementedUserServiceServer) UpdateUser(context.Context, *User) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *PrimaryKey) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
-func (UnimplementedUserServiceServer) GetUser(context.Context, *PrimaryKey) (*emptypb.Empty, error) {
+func (UnimplementedUserServiceServer) GetUser(context.Context, *PrimaryKey) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) GetAllUsers(context.Context, *GetListRequest) (*emptypb.Empty, error) {
+func (UnimplementedUserServiceServer) GetAllUsers(context.Context, *GetListRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
@@ -111,6 +125,24 @@ type UnsafeUserServiceServer interface {
 
 func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 	s.RegisterService(&UserService_ServiceDesc, srv)
+}
+
+func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -192,6 +224,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "user_service.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserService_CreateUser_Handler,
+		},
 		{
 			MethodName: "UpdateUser",
 			Handler:    _UserService_UpdateUser_Handler,
