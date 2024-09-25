@@ -1,0 +1,23 @@
+p, admin, /carpet_service/v1/address, POST
+p, admin, /carpet_service/v1/address, GET
+p, admin, /carpet_service/v1/address, PUT
+p, admin, /carpet_service/v1/address, DELETE
+
+
+p, admin, /carpet_service/v2/company, POST
+p, admin, /carpet_service/v2/company, GET
+p, admin, /carpet_service/v2/company, GET
+p, admin, /carpet_service/v2/company, PUT
+p, admin, /carpet_service/v2/company, DELETE
+
+p, admin, /carpet_service/v3/service, POST
+p, admin, /carpet_service/v3/service, GET
+p, admin, /carpet_service/v3/service, GET
+p, admin, /carpet_service/v3/service, PUT
+p, admin, /carpet_service/v3/service, DELETE
+
+
+p, admin, /carpet_service/v4/order, POST
+p, admin, /carpet_service/v4/order, GET
+p, admin, /carpet_service/v4/order, PUT
+p, admin, /carpet_service/v4/order, DELETE
