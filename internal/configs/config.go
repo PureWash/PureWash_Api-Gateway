@@ -1,3 +1,4 @@
+
 package configs
 
 import (
@@ -27,7 +28,6 @@ func Load() Config {
 	}
 	config := Config{}
 
-	config.HTTPPort = cast.ToString(coalesce("HTTP_Port", ":8082"))
 
 	config.HTTPHost = cast.ToString(coalesce("HTTP_HOST", "localhost"))
 	config.HTTPPort = cast.ToString(coalesce("HTTP_PORT", ":8085"))

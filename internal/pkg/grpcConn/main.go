@@ -47,7 +47,7 @@ func (g *grpcClients) ServiceService() pbp.ServiceServiceClient {
 
 func NewGrpcClients(cnf configs.Config, log logger.ILogger) (IServiceManager, error) {
 	connUserService, err :=
-		grpc.Dial(
+		grpc.NewClient(
 			cnf.AuthServiceGrpcHost+cnf.AuthServiceGrpcPort,
 			grpc.WithInsecure())
 
@@ -56,7 +56,7 @@ func NewGrpcClients(cnf configs.Config, log logger.ILogger) (IServiceManager, er
 		log.Error("this error is  connUserService with dialing ", logger.Error(err))
 		return nil, err
 	}
-	connCarpetService, err := grpc.Dial(
+	connCarpetService, err := grpc.NewClient(
 		cnf.CarpetServiceGrpcHost+cnf.CarpetServiceGrpcPort,
 		grpc.WithInsecure())
 	if err != nil {
