@@ -41,11 +41,7 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 		handleResponse(ctx, h.log, "error is while parsing to uuid in userID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
 		return
 	}
-	addressID, err := ParseUuId(payload.AddressID, h.log)
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while parsing to uuid in addressID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
-		return
-	}
+
 	serviceID, err := ParseUuId(payload.ServiceID, h.log)
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while parsing to uuid in serviceID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
@@ -60,7 +56,6 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 	}
 	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.OrderRequest{
 		UserId:     cast.ToString(userID),
-		AddressId:  cast.ToString(addressID),
 		ServiceId:  cast.ToString(serviceID),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),
@@ -115,11 +110,7 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 		handleResponse(ctx, h.log, "error is while parsing to uuid in userID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
 		return
 	}
-	addressID, err := ParseUuId(payload.AddressID, h.log)
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while parsing to uuid in addressID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
-		return
-	}
+
 	serviceID, err := ParseUuId(payload.ServiceID, h.log)
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while parsing to uuid in serviceID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
@@ -136,7 +127,6 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 	response, err := h.services.OrderService().UpdateOrder(ctx, &pbp.Order{
 		Id:         cast.ToString(orderId),
 		UserId:     cast.ToString(userID),
-		AddressId:  cast.ToString(addressID),
 		ServiceId:  cast.ToString(serviceID),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),
@@ -290,11 +280,6 @@ func (h *Handler) CreateOrderForUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	addressID, err := ParseUuId(payload.AddressID, h.log)
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while parsing to uuid in addressID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
-		return
-	}
 	serviceID, err := ParseUuId(payload.ServiceID, h.log)
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while parsing to uuid in serviceID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
@@ -322,7 +307,6 @@ func (h *Handler) CreateOrderForUserHandler(ctx *gin.Context) {
 	}
 	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.OrderRequest{
 		UserId:     user.GetId(),
-		AddressId:  cast.ToString(addressID),
 		ServiceId:  cast.ToString(serviceID),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),

@@ -7,7 +7,6 @@ type Order struct {
 	Area       float32 `json:"area"`
 	TotalPrice float64 `json:"total_price"`
 	Status     string  `json:"status"`
-	AddressID  string  `json:"address_id"`
 	CreatedAt  string  `json:"createdAt"`
 }
 
@@ -17,7 +16,6 @@ type OrderRequest struct {
 	Area       float32 `json:"area"`
 	TotalPrice float64 `json:"total_price"`
 	Status     string  `json:"status"`
-	AddressID  string  `json:"address_id"`
 }
 type OrdersResponse struct {
 	Orders []*Order `json:"orders"`
@@ -29,7 +27,6 @@ type OrderForUserRequest struct {
 	Area       float32 `json:"area"`
 	TotalPrice float64 `json:"total_price"`
 	Status     string  `json:"status"`
-	AddressID  string  `json:"address_id"`
 }
 type OrderForUser struct {
 	ID         string  `json:"id"`
@@ -37,6 +34,5 @@ type OrderForUser struct {
 	Area       float32 `json:"area"`
 	TotalPrice float64 `json:"total_price"`
 	Status     string  `json:"status"`
-	AddressID  string  `json:"address_id"`
 	CreatedAt  string  `json:"createdAt"`
 }

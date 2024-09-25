@@ -1625,9 +1625,6 @@ const docTemplate = `{
         "domain.Order": {
             "type": "object",
             "properties": {
-                "address_id": {
-                    "type": "string"
-                },
                 "area": {
                     "type": "number"
                 },
@@ -1654,9 +1651,6 @@ const docTemplate = `{
         "domain.OrderForUserRequest": {
             "type": "object",
             "properties": {
-                "address_id": {
-                    "type": "string"
-                },
                 "area": {
                     "type": "number"
                 },
@@ -1674,9 +1668,6 @@ const docTemplate = `{
         "domain.OrderRequest": {
             "type": "object",
             "properties": {
-                "address_id": {
-                    "type": "string"
-                },
                 "area": {
                     "type": "number"
                 },
