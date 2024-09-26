@@ -13,6 +13,7 @@ type Config struct {
 	ServiceName string
 	Environment string
 	LoggerLevel string
+	HTTPHost    string
 	HTTPPort    string
 
 	AuthServiceGrpcHost   string
@@ -27,6 +28,8 @@ func Load() Config {
 	}
 	config := Config{}
 
+
+	config.HTTPHost = cast.ToString(coalesce("HTTP_HOST", "localhost"))
 	config.HTTPPort = cast.ToString(coalesce("HTTP_PORT", ":8085"))
 
 	config.AuthServiceGrpcPort = cast.ToString(coalesce("AUTH_SERVICE_GRPC_HOST", "localhost"))

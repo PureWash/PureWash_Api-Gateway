@@ -26,15 +26,18 @@ func ExtractClaims(tokenStr string) (jwt.MapClaims, error) {
 	})
 
 	if err != nil {
+
 		return nil, fmt.Errorf("faild to parse token: %w", err)
 	}
 
 	if !token.Valid {
+
 		return nil, fmt.Errorf("invalid token")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
+
 		return nil, fmt.Errorf("invalid token claims")
 	}
 	return claims, nil

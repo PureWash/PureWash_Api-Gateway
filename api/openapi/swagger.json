@@ -10,7 +10,7 @@
             "post": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Address",
@@ -67,7 +67,7 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Address",
@@ -120,7 +120,7 @@
             "put": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Updates the details of an existing Address .",
@@ -182,7 +182,7 @@
             "delete": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Address  Delete",
@@ -237,7 +237,7 @@
             "post": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Company",
@@ -294,7 +294,7 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Company",
@@ -347,7 +347,7 @@
             "put": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Updates the details of an existing Company .",
@@ -409,7 +409,7 @@
             "delete": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Company  Delete",
@@ -464,7 +464,7 @@
             "post": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Order",
@@ -521,7 +521,7 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Order",
@@ -574,7 +574,7 @@
             "put": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Updates the details of an existing Order .",
@@ -636,7 +636,7 @@
             "delete": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Order  Delete",
@@ -803,7 +803,7 @@
             "post": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Service",
@@ -860,7 +860,7 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Service",
@@ -913,7 +913,7 @@
             "put": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Updates the details of an existing Service .",
@@ -975,7 +975,7 @@
             "delete": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Service  Delete",
@@ -1096,7 +1096,7 @@
             "post": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "User_Address",
@@ -1156,7 +1156,7 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "User_Address",
@@ -1212,7 +1212,7 @@
             "put": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Updates the details of an existing User_Address .",
@@ -1279,7 +1279,7 @@
             "post": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "User_Order",
@@ -1339,7 +1339,7 @@
             "get": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "User_Order",
@@ -1394,10 +1394,10 @@
             }
         },
         "/api/user_order_canceled/{id}": {
-            "get": {
+            "put": {
                 "security": [
                     {
-                        "BearerAuth": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "Updates the details of an existing User_Order .",
@@ -1582,13 +1582,7 @@
                 "id": {
                     "type": "string"
                 },
-                "logo_url": {
-                    "type": "string"
-                },
                 "name": {
-                    "type": "string"
-                },
-                "status": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -1602,13 +1596,7 @@
                 "description": {
                     "type": "string"
                 },
-                "logo_url": {
-                    "type": "string"
-                },
                 "name": {
-                    "type": "string"
-                },
-                "status": {
                     "type": "string"
                 }
             }

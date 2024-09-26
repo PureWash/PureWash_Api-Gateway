@@ -84,14 +84,15 @@ func NewServer(cfg configs.Config) Server {
 func (h *Handler) Run() {
 	ginSwagger.WrapHandler(swaggerFiles.Handler,
 		ginSwagger.URL(fmt.Sprintf(
-			"%s/swagger/docs.json",
+			"%s/%d/swagger/docs.json",
+			h.cnf.HTTPHost,
 			h.cnf.HTTPPort,
 		)),
 		ginSwagger.DefaultModelsExpandDepth(-1),
 	)
-	h.log.Info("server is running: ", logger.Any("PORT", h.cnf.HTTPPort))
+	h.log.Info("server is running: ", logger.Any("HOST", h.cnf.HTTPHost), logger.Any("PORT", h.cnf.HTTPPort))
 
-	if err := h.engine.Run(fmt.Sprintf(":%s", h.cnf.HTTPPort)); err != nil {
+	if err := h.engine.Run(fmt.Sprintf("%s:%s", h.cnf.HTTPHost, h.cnf.HTTPPort)); err != nil {
 		h.log.Error("failed to run server", logger.Error(err))
 	}
 

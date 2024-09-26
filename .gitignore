@@ -1,2 +1,2 @@
 vendor/
-.env/
+.env/internal/configs/serviceAccountKey.json
