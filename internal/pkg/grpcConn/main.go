@@ -7,7 +7,6 @@ import (
 	"api_gateway/internal/configs"
 	"api_gateway/internal/pkg/logger"
 	"google.golang.org/grpc"
-	_ "google.golang.org/grpc"
 )
 
 type IServiceManager interface {
@@ -52,10 +51,10 @@ func NewGrpcClients(cnf configs.Config, log logger.ILogger) (IServiceManager, er
 			grpc.WithInsecure())
 
 	if err != nil {
-
 		log.Error("this error is  connUserService with dialing ", logger.Error(err))
 		return nil, err
 	}
+
 	connCarpetService, err := grpc.Dial(
 		cnf.CarpetServiceGrpcHost+cnf.CarpetServiceGrpcPort,
 		grpc.WithInsecure())
