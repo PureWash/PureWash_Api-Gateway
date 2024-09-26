@@ -1,0 +1,33 @@
+syntax="proto3";
+
+option  go_package="genproto/carpet_service";
+package carpet_wash_service;
+import  "carpet_wash_common.proto";
+import "google/protobuf/empty.proto";
+
+
+
+message  Address {
+  string  id=1;
+  string  user_id=2;
+  string  latitude=3;
+  string  longitude =4;
+  string  created_at =5;
+  string  updated_at=6;
+}
+message  AddressRequest{
+  string  user_id=1;
+  string  latitude=2;
+  string  longitude =3;
+}
+message  AddressesResponse{
+  repeated  Address addresses=1;
+}
+service  Addresses {
+  rpc CreateAddress(AddressRequest)returns(Address);
+  rpc UpdateAddress(Address)returns(Address);
+  rpc DeleteAddress(PrimaryKey)returns(google.protobuf.Empty);
+  rpc GetAddress(PrimaryKey)returns(Address);
+  // rpc GetAllAddresses(GetListRequest)returns(AddressesResponse);
+
+}
