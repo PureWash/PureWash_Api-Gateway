@@ -7,6 +7,7 @@ import (
 
 // Ping   godoc
 // @Router       /api/ping [get]
+// @Security     ApiKeyAuth
 // @Summary      Ping
 // @Description  Ping
 // @Tags         Ping
@@ -16,7 +17,6 @@ import (
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) Ping(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{
 		"Success": "Hi PING PONG",

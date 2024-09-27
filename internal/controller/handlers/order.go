@@ -2,7 +2,6 @@ package handlers
 
 import (
 	pbp "api_gateway/genproto/carpet_service"
-	pbu "api_gateway/genproto/user_service"
 	"api_gateway/internal/domain"
 	token "api_gateway/internal/pkg/jwt"
 	"context"
@@ -14,6 +13,7 @@ import (
 
 // CreateOrderHandler   godoc
 // @Router       /api/order [POST]
+// @Security     ApiKeyAuth
 // @Summary      Order
 // @Description  Order
 // @Tags         Order
@@ -24,7 +24,6 @@ import (
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 	var (
 		payload domain.OrderRequest
@@ -74,6 +73,7 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 
 // UpdateOrderHandler   godoc
 // @Router       /api/order/{id} [put]
+// @Security     ApiKeyAuth
 // @Summary      Update  Order
 // @Description  Updates the details of an existing Order .
 // @Tags         Order
@@ -85,7 +85,6 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 	var (
 		payload domain.OrderRequest
@@ -146,6 +145,7 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 
 // DeleteOrderHandler   godoc
 // @Router       /api/order/{id} [delete]
+// @Security     ApiKeyAuth
 // @Summary      Order
 // @Description  Order  Delete
 // @Tags         Order
@@ -156,7 +156,6 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) DeleteOrderHandler(ctx *gin.Context) {
 	var (
 		payload pbp.PrimaryKey
@@ -181,6 +180,7 @@ func (h *Handler) DeleteOrderHandler(ctx *gin.Context) {
 
 // GetOrderHandler   godoc
 // @Router       /api/order/{id} [GET]
+// @Security     ApiKeyAuth
 // @Summary      Order
 // @Description  Order
 // @Tags         Order
@@ -191,7 +191,6 @@ func (h *Handler) DeleteOrderHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) GetOrderHandler(ctx *gin.Context) {
 	var (
 		id  string
@@ -257,6 +256,7 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 
 // CreateOrderForUserHandler   godoc
 // @Router       /api/user_order [POST]
+// @Security     ApiKeyAuth
 // @Summary      User_Order
 // @Description  User_Order
 // @Tags         User_Order
@@ -267,7 +267,6 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) CreateOrderForUserHandler(ctx *gin.Context) {
 	var (
 		payload domain.OrderForUserRequest
@@ -298,15 +297,8 @@ func (h *Handler) CreateOrderForUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.services.UserService().GetUser(ctx, &pbu.PrimaryKey{
-		Id: cast.ToString(userId),
-	})
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusInternalServerError, err.Error())
-		return
-	}
 	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.OrderRequest{
-		UserId:     user.GetId(),
+		UserId:     cast.ToString(userId),
 		ServiceId:  cast.ToString(serviceID),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),
@@ -317,9 +309,9 @@ func (h *Handler) CreateOrderForUserHandler(ctx *gin.Context) {
 		return
 	}
 	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, gin.H{
-		"user": user,
+		"user": cast.ToString(userId),
 		"Order": gin.H{
-			"address": response,
+			"order":   response,
 			"message": "Order create successfully",
 			"success": true,
 		},
@@ -329,7 +321,8 @@ func (h *Handler) CreateOrderForUserHandler(ctx *gin.Context) {
 }
 
 // UpdateOrderForUserHandler   godoc
-// @Router       /api/user_order_canceled/{id} [GET]
+// @Router       /api/user_order_canceled/{id} [PUT]
+// @Security     ApiKeyAuth
 // @Summary      Update  User_Order
 // @Description  Updates the details of an existing User_Order .
 // @Tags         User_Order
@@ -340,7 +333,6 @@ func (h *Handler) CreateOrderForUserHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) UpdateOrderForUserHandler(ctx *gin.Context) {
 	var (
 		err error
@@ -367,17 +359,9 @@ func (h *Handler) UpdateOrderForUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.services.UserService().GetUser(ctx, &pbu.PrimaryKey{
-		Id: cast.ToString(userId),
-	})
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusInternalServerError, err.Error())
-		return
-	}
-
 	response, err := h.services.OrderService().UpdateOrder(ctx, &pbp.Order{
 		Id:         order.GetId(),
-		UserId:     user.GetId(),
+		UserId:     cast.ToString(userId),
 		AddressId:  order.GetAddressId(),
 		ServiceId:  order.GetServiceId(),
 		Area:       order.GetArea(),
@@ -390,9 +374,9 @@ func (h *Handler) UpdateOrderForUserHandler(ctx *gin.Context) {
 	}
 
 	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, gin.H{
-		"user": user,
+		"user": cast.ToString(userId),
 		"Order": gin.H{
-			"address": response,
+			"order":   response,
 			"message": "Order canceled successfully",
 			"success": true,
 		},
@@ -403,6 +387,7 @@ func (h *Handler) UpdateOrderForUserHandler(ctx *gin.Context) {
 }
 
 // GetOrderForUserHandler   godoc
+// @Security     ApiKeyAuth
 // @Router       /api/user_order/{id} [GET]
 // @Summary      User_Order
 // @Description  User_Order
@@ -414,7 +399,6 @@ func (h *Handler) UpdateOrderForUserHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) GetOrderForUserHandler(ctx *gin.Context) {
 	var (
 		id  string
@@ -440,20 +424,13 @@ func (h *Handler) GetOrderForUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.services.UserService().GetUser(ctx, &pbu.PrimaryKey{
-		Id: cast.ToString(userId),
-	})
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusInternalServerError, err.Error())
-		return
-	}
-	if response.GetUserId() != user.GetId() {
+	if response.GetUserId() != cast.ToString(userId) {
 		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusNotFound, fmt.Errorf("user not found"))
 		return
 
 	}
 	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, gin.H{
-		"user": user,
+		"user": cast.ToString(userId),
 		"Order": gin.H{
 			"order":   response,
 			"message": "Order get successfully",
@@ -505,22 +482,15 @@ func (h Handler) GetAllOrdersForUser(c *gin.Context) {
 		return
 	}
 
-	user, err := h.services.UserService().GetUser(c, &pbu.PrimaryKey{
-		Id: cast.ToString(userId),
-	})
-	if err != nil {
-		handleResponse(c, h.log, "error is while get userId  not found in user", http.StatusInternalServerError, err.Error())
-		return
-	}
 	var orders []*pbp.Order
 	for _, order := range response.Orders {
-		if order.GetUserId() == user.GetId() {
+		if order.GetUserId() == cast.ToString(userId) {
 			orders = append(orders, order)
 		}
 	}
 
 	handleResponse(c, h.log, "Success", http.StatusOK, gin.H{
-		"user": user,
+		"user": cast.ToString(userId),
 		"Order": gin.H{
 			"orders":  orders,
 			"message": "Orders get all successfully",

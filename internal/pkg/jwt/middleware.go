@@ -16,9 +16,9 @@ func JWTMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("authorization header is required"))
 			return
 		}
-
 		valid, err := ValidateToken(auth)
 		if err != nil || !valid {
+
 			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("invalid token: %s", err))
 			return
 		}

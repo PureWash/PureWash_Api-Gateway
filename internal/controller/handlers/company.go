@@ -10,6 +10,7 @@ import (
 
 // CreateCompanyHandler   godoc
 // @Router       /api/company [POST]
+// @Security     ApiKeyAuth
 // @Summary      Company
 // @Description  Company
 // @Tags         Company
@@ -20,7 +21,6 @@ import (
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) CreateCompanyHandler(ctx *gin.Context) {
 	var (
 		payload domain.CompanyRequest
@@ -36,8 +36,6 @@ func (h *Handler) CreateCompanyHandler(ctx *gin.Context) {
 	response, err := h.services.CompanyService().CreateCompany(ctx, &pbp.CompanyRequest{
 		Name:        payload.Name,
 		Description: payload.Description,
-		LogoUrl:     payload.LogoUrl,
-		Status:      payload.Status,
 	})
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while create  company by  storage ---~~~~~~~ERROR===", http.StatusInternalServerError, err.Error())
@@ -52,6 +50,7 @@ func (h *Handler) CreateCompanyHandler(ctx *gin.Context) {
 
 // UpdateCompanyHandler   godoc
 // @Router       /api/company/{id} [put]
+// @Security     ApiKeyAuth
 // @Summary      Update  Company
 // @Description  Updates the details of an existing Company .
 // @Tags         Company
@@ -63,7 +62,6 @@ func (h *Handler) CreateCompanyHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) UpdateCompanyHandler(ctx *gin.Context) {
 	var (
 		payload domain.CompanyRequest
@@ -88,8 +86,6 @@ func (h *Handler) UpdateCompanyHandler(ctx *gin.Context) {
 		Id:          cast.ToString(companyId),
 		Name:        payload.Name,
 		Description: payload.Description,
-		LogoUrl:     payload.LogoUrl,
-		Status:      payload.Status,
 	})
 	if err != nil {
 		handleResponse(ctx, h.log, "Failed to update Company ", http.StatusInternalServerError, err.Error())
@@ -105,6 +101,7 @@ func (h *Handler) UpdateCompanyHandler(ctx *gin.Context) {
 
 // DeleteCompanyHandler   godoc
 // @Router       /api/company/{id} [delete]
+// @Security     ApiKeyAuth
 // @Summary      Company
 // @Description  Company  Delete
 // @Tags         Company
@@ -115,7 +112,6 @@ func (h *Handler) UpdateCompanyHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) DeleteCompanyHandler(ctx *gin.Context) {
 	var (
 		payload pbp.PrimaryKey
@@ -140,6 +136,7 @@ func (h *Handler) DeleteCompanyHandler(ctx *gin.Context) {
 
 // GetCompanyHandler   godoc
 // @Router       /api/company/{id} [GET]
+// @Security     ApiKeyAuth
 // @Summary      Company
 // @Description  Company
 // @Tags         Company
@@ -150,7 +147,6 @@ func (h *Handler) DeleteCompanyHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) GetCompanyHandler(ctx *gin.Context) {
 	var (
 		id  string

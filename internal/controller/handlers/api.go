@@ -1,15 +1,17 @@
 package handlers
 
 import (
+	token "api_gateway/internal/pkg/jwt"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func setUpApi(h *Handler) {
-	//h.engine.Use(token.JWTMiddleware())
+	h.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	h.engine.Use(token.JWTMiddleware())
 
 	pureWash := h.engine.Group("/api")
-	pureWash.Use()
 	{
 		pureWash.GET("/ping", h.Ping)
 		pureWash.POST("/company", h.CreateCompanyHandler)
@@ -35,7 +37,7 @@ func setUpApi(h *Handler) {
 		pureWash.DELETE("/service/:id", h.DeleteServiceHandler)
 
 		pureWash.POST("/user_order", h.CreateOrderForUserHandler)
-		pureWash.GET("/user_order/:id", h.GetAllOrdersForUser)
+		pureWash.GET("/user_order/:id", h.GetOrderForUserHandler)
 		pureWash.GET("/user_orders", h.GetAllOrdersForUser)
 		pureWash.PUT("/user_order_canceled/:id", h.UpdateOrderForUserHandler)
 
@@ -44,6 +46,5 @@ func setUpApi(h *Handler) {
 		pureWash.PUT("/user_address/:id", h.UpdateAddressForUserHandler)
 
 	}
-	h.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 }

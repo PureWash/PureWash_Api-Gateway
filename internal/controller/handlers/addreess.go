@@ -2,7 +2,6 @@ package handlers
 
 import (
 	pbp "api_gateway/genproto/carpet_service"
-	pbu "api_gateway/genproto/user_service"
 	"api_gateway/internal/domain"
 	token "api_gateway/internal/pkg/jwt"
 	"fmt"
@@ -13,6 +12,7 @@ import (
 
 // CreateAddressHandler   godoc
 // @Router       /api/address [POST]
+// @Security     ApiKeyAuth
 // @Summary      Address
 // @Description  Address
 // @Tags         Address
@@ -23,7 +23,6 @@ import (
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) CreateAddressHandler(ctx *gin.Context) {
 	var (
 		payload domain.AddressRequest
@@ -59,6 +58,7 @@ func (h *Handler) CreateAddressHandler(ctx *gin.Context) {
 
 // UpdateAddressHandler   godoc
 // @Router       /api/address/{id} [put]
+// @Security     ApiKeyAuth
 // @Summary      Update  Address
 // @Description  Updates the details of an existing Address .
 // @Tags         Address
@@ -70,7 +70,6 @@ func (h *Handler) CreateAddressHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) UpdateAddressHandler(ctx *gin.Context) {
 	var (
 		payload domain.AddressRequest
@@ -117,6 +116,7 @@ func (h *Handler) UpdateAddressHandler(ctx *gin.Context) {
 
 // DeleteAddressHandler   godoc
 // @Router       /api/address/{id} [delete]
+// @Security     ApiKeyAuth
 // @Summary      Address
 // @Description  Address  Delete
 // @Tags         Address
@@ -127,7 +127,6 @@ func (h *Handler) UpdateAddressHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) DeleteAddressHandler(ctx *gin.Context) {
 	var (
 		payload pbp.PrimaryKey
@@ -192,6 +191,7 @@ func (h *Handler) DeleteAddressHandler(ctx *gin.Context) {
 
 // GetAddressHandler   godoc
 // @Router       /api/address/{id} [GET]
+// @Security     ApiKeyAuth
 // @Summary      Address
 // @Description  Address
 // @Tags         Address
@@ -202,7 +202,6 @@ func (h *Handler) DeleteAddressHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) GetAddressHandler(ctx *gin.Context) {
 	var (
 		id  string
@@ -229,6 +228,7 @@ func (h *Handler) GetAddressHandler(ctx *gin.Context) {
 
 // CreateAddressForUserHandler   godoc
 // @Router       /api/user_address [POST]
+// @Security     ApiKeyAuth
 // @Summary      User_Address
 // @Description  User_Address
 // @Tags         User_Address
@@ -239,7 +239,6 @@ func (h *Handler) GetAddressHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) CreateAddressForUserHandler(ctx *gin.Context) {
 	var (
 		payload domain.AddressForUserRequest
@@ -258,16 +257,8 @@ func (h *Handler) CreateAddressForUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.services.UserService().GetUser(ctx, &pbu.PrimaryKey{
-		Id: cast.ToString(userId),
-	})
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusInternalServerError, err)
-		return
-	}
-
 	response, err := h.services.AddressService().CreateAddress(ctx, &pbp.AddressRequest{
-		UserId:    user.GetId(),
+		UserId:    cast.ToString(userId),
 		Latitude:  payload.Latitude,
 		Longitude: payload.Longitude,
 	})
@@ -276,7 +267,7 @@ func (h *Handler) CreateAddressForUserHandler(ctx *gin.Context) {
 		return
 	}
 	handleResponse(ctx, h.log, "SUCCESSES", http.StatusCreated, gin.H{
-		"user": user,
+		"user": cast.ToString(userId),
 		"Address": gin.H{
 			"address": response,
 			"message": "Address added successfully",
@@ -289,6 +280,7 @@ func (h *Handler) CreateAddressForUserHandler(ctx *gin.Context) {
 
 // UpdateAddressForUserHandler   godoc
 // @Router       /api/user_address/{id} [put]
+// @Security     ApiKeyAuth
 // @Summary      Update  User_Address
 // @Description  Updates the details of an existing User_Address .
 // @Tags         User_Address
@@ -300,7 +292,6 @@ func (h *Handler) CreateAddressForUserHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) UpdateAddressForUserHandler(ctx *gin.Context) {
 	var (
 		payload domain.AddressForUserRequest
@@ -327,14 +318,6 @@ func (h *Handler) UpdateAddressForUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.services.UserService().GetUser(ctx, &pbu.PrimaryKey{
-		Id: cast.ToString(userId),
-	})
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusInternalServerError, err.Error())
-		return
-	}
-
 	response, err := h.services.AddressService().UpdateAddress(ctx, &pbp.Address{
 		Id:        cast.ToString(addressId),
 		UserId:    cast.ToString(userId),
@@ -347,7 +330,7 @@ func (h *Handler) UpdateAddressForUserHandler(ctx *gin.Context) {
 	}
 
 	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, gin.H{
-		"user": user,
+		"user": cast.ToString(userId),
 		"Address": gin.H{
 			"address": response,
 			"message": "Address updated successfully",
@@ -360,6 +343,7 @@ func (h *Handler) UpdateAddressForUserHandler(ctx *gin.Context) {
 
 // GetAddressForUserHandler   godoc
 // @Router       /api/user_address/{id} [GET]
+// @Security     ApiKeyAuth
 // @Summary      User_Address
 // @Description  User_Address
 // @Tags         User_Address
@@ -370,7 +354,6 @@ func (h *Handler) UpdateAddressForUserHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) GetAddressForUserHandler(ctx *gin.Context) {
 	var (
 		id  string
@@ -396,19 +379,12 @@ func (h *Handler) GetAddressForUserHandler(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.services.UserService().GetUser(ctx, &pbu.PrimaryKey{
-		Id: cast.ToString(userId),
-	})
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusInternalServerError, err.Error())
-		return
-	}
-	if response.GetUserId() != user.GetId() {
+	if response.GetUserId() != cast.ToString(userId) {
 		handleResponse(ctx, h.log, "error is while get userId  not found in user", http.StatusNotFound, fmt.Errorf("user not foun in authoration"))
 
 	}
 	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, gin.H{
-		"user": user,
+		"user": cast.ToString(userId),
 		"Address": gin.H{
 			"address": response,
 			"message": "Address get successfully",

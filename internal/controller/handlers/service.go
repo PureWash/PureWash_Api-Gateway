@@ -12,6 +12,7 @@ import (
 
 // CreateServiceHandler   godoc
 // @Router       /api/service [POST]
+// @Security     ApiKeyAuth
 // @Summary      Service
 // @Description  Service
 // @Tags         Service
@@ -22,7 +23,6 @@ import (
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) CreateServiceHandler(ctx *gin.Context) {
 	var (
 		payload domain.ServiceRequest
@@ -58,6 +58,7 @@ func (h *Handler) CreateServiceHandler(ctx *gin.Context) {
 
 // UpdateServiceHandler   godoc
 // @Router       /api/service/{id} [put]
+// @Security     ApiKeyAuth
 // @Summary      Update  Service
 // @Description  Updates the details of an existing Service .
 // @Tags         Service
@@ -69,7 +70,6 @@ func (h *Handler) CreateServiceHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) UpdateServiceHandler(ctx *gin.Context) {
 	var (
 		payload domain.ServiceRequest
@@ -114,6 +114,7 @@ func (h *Handler) UpdateServiceHandler(ctx *gin.Context) {
 
 // DeleteServiceHandler   godoc
 // @Router       /api/service/{id} [delete]
+// @Security     ApiKeyAuth
 // @Summary      Service
 // @Description  Service  Delete
 // @Tags         Service
@@ -124,7 +125,6 @@ func (h *Handler) UpdateServiceHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) DeleteServiceHandler(ctx *gin.Context) {
 	var (
 		payload pbp.PrimaryKey
@@ -149,6 +149,7 @@ func (h *Handler) DeleteServiceHandler(ctx *gin.Context) {
 
 // GetServiceHandler   godoc
 // @Router       /api/service/{id} [GET]
+// @Security     ApiKeyAuth
 // @Summary      Service
 // @Description  Service
 // @Tags         Service
@@ -159,7 +160,6 @@ func (h *Handler) DeleteServiceHandler(ctx *gin.Context) {
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-// @Security BearerAuth
 func (h *Handler) GetServiceHandler(ctx *gin.Context) {
 	var (
 		id  string
