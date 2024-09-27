@@ -2,7 +2,7 @@ package configs
 
 import "time"
 
-var SignKey = []byte("asd@#lskd2!aw32k34242WSASdsk32")
+var SignKey = []byte("my_secret_key")
 
 const (
 	AccessExpireTime  = time.Minute * 1
