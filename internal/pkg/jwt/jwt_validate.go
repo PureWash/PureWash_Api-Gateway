@@ -4,6 +4,8 @@ import (
 	"api_gateway/internal/configs"
 	"api_gateway/internal/pkg/logger"
 	"fmt"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/golang-jwt/jwt"
@@ -17,7 +19,10 @@ func ValidateToken(tokenStr string) (bool, error) {
 	return true, nil
 }
 
+
 func ExtractClaims(tokenStr string) (jwt.MapClaims, error) {
+	tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
+	println(tokenStr)
 	token, err := jwt.ParseWithClaims(tokenStr, jwt.MapClaims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])

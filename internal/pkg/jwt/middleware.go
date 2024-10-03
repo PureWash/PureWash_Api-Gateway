@@ -18,7 +18,6 @@ func JWTMiddleware() gin.HandlerFunc {
 		}
 		valid, err := ValidateToken(auth)
 		if err != nil || !valid {
-
 			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("invalid token: %s", err))
 			return
 		}
