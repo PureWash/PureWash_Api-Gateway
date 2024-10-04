@@ -1,0 +1,47 @@
+name: PureWash Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go 
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23.1'
+
+      - name: Deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ubuntu/CarpetsWash/user-service/
+            git pull origin main
+            sudo docker compose down
+            sudo docker image rm purewash_user_auth_service-user_service
+            sudo docker compose up --build -d
+
+            cd ../PureWash_Api-Gateway/
+            git pull origin main
+            sudo docker compose down
+            sudo docker image rm purewash_api-gateway-api_service
+            sudo docker compose up --build -d
+
+            cd ../carpet-wash/
+            git pull origin main
+            sudo docker compose down
+            sudo docker image rm carpetwash-carpetwash
+            sudo docker compose up --build -d
+
