@@ -6,9 +6,10 @@ import (
 	token "api_gateway/internal/pkg/jwt"
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
-	"net/http"
 )
 
 // CreateOrderHandler   godoc
@@ -247,9 +248,33 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 		handleResponse(c, h.log, "error is while getting all baskets", http.StatusInternalServerError, err.Error())
 		return
 	}
+	var services []*pbp.Service
+	for i := 0; i < len(response.Orders); i++ {
+		serviceResp, err := h.services.ServiceService().GetService(c, &pbp.PrimaryKey{
+			Id: cast.ToString(response.Orders[i].ServiceId),
+		})
+		if err != nil {
+			handleResponse(c, h.log, "error is while getting all services", http.StatusInternalServerError, err.Error())
+			return
+		}
+		services = append(services, serviceResp)
 
-	handleResponse(c, h.log, "", http.StatusOK, response)
+	}
 
+	handleResponse(c, h.log, "SUCCESSES", http.StatusOK, gin.H{
+		"Order": gin.H{
+			"order":   response,
+			"message": "Order get-all successfully",
+			"success": true,
+		},
+		"services": gin.H{
+			"services": services,
+			"message":  "services get all successfully",
+			"success":  true,
+		},
+		"message": "successfully",
+		"success": true,
+	})
 }
 
 // user order information
