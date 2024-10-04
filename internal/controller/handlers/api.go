@@ -36,14 +36,14 @@ func setUpApi(h *Handler) {
 		pureWash.PUT("/service/:id", h.UpdateServiceHandler)
 		pureWash.DELETE("/service/:id", h.DeleteServiceHandler)
 
-		pureWash.POST("/user_order", h.CreateOrderForUserHandler)
-		pureWash.GET("/user_order/:id", h.GetOrderForUserHandler)
-		pureWash.GET("/user_orders", h.GetAllOrdersForUser)
-		pureWash.PUT("/user_order_canceled/:id", h.UpdateOrderForUserHandler)
+		// pureWash.POST("/user_order", h.CreateOrderForUserHandler)
+		// pureWash.GET("/user_order/:id", h.GetOrderForUserHandler)
+		// pureWash.GET("/user_orders", h.GetAllOrdersForUser)
+		// pureWash.PUT("/user_order_canceled/:id", h.UpdateOrderForUserHandler)
 
-		pureWash.POST("/user_address", h.CreateAddressForUserHandler)
-		pureWash.GET("/user_address/:id", h.GetAddressForUserHandler)
-		pureWash.PUT("/user_address/:id", h.UpdateAddressForUserHandler)
+		// pureWash.POST("/user_address", h.CreateAddressForUserHandler)
+		// pureWash.GET("/user_address/:id", h.GetAddressForUserHandler)
+		// pureWash.PUT("/user_address/:id", h.UpdateAddressForUserHandler)
 
 	}
 

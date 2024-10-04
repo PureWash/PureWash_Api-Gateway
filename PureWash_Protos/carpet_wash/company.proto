@@ -1,0 +1,35 @@
+syntax="proto3";
+
+option  go_package="genproto/carpet_service";
+package carpet_wash_service;
+import  "carpet_wash_common.proto";
+import "google/protobuf/empty.proto";
+
+
+message  Company {
+   string  id=1;
+   string  name=2;
+   string  logo_url=3;
+   string  status=4;
+   string  description=7;
+   string  created_at =5;
+   string  updated_at=6;
+}
+message  CompanyRequest{
+  string  name=1;
+  string logo_url=2;
+  string  description=4;
+  string  status=3;
+}
+// message  CompaniesResponse{
+//    repeated  Company companies=1;
+//    int64  count=2;
+// }
+service  CompanyService {
+  rpc CreateCompany(CompanyRequest)returns(Company);
+  rpc UpdateCompany(Company)returns(Company);
+  rpc DeleteCompany(PrimaryKey)returns(google.protobuf.Empty);
+  rpc GetCompany(PrimaryKey)returns(Company);
+  // rpc GetAllCompany(GetListRequest)returns(CompaniesResponse);
+
+}
