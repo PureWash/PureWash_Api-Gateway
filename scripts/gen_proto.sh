@@ -7,7 +7,7 @@ OUTPUT_DIR="${CURRENT_DIR}"  # Output directory within the project directory
 mkdir -p "$OUTPUT_DIR" || { echo "Failed to create output directory"; exit 1; }
 
 # Iterate over directories in trip_protos
-for dir in "${CURRENT_DIR}/PureWash_Protos"/*; do
+for dir in "${CURRENT_DIR}/protos"/*; do
     # Skip non-directories
     [ -d "$dir" ] || continue
 
