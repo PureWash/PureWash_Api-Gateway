@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	pbp "api_gateway/genproto/carpet_service"
+	pbp "api_gateway/genproto/pure_wash"
 	"api_gateway/internal/domain"
 	"net/http"
 

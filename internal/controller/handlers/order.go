@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	pbp "api_gateway/genproto/carpet_service"
+	pbp "api_gateway/genproto/pure_wash"
 	"api_gateway/internal/domain"
 	"context"
 	"fmt"
@@ -26,7 +26,7 @@ import (
 // @Failure      500  {object}  domain.Response
 func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 	var (
-		payload domain.OrderRequest
+		payload domain.CreateOrderReq
 		err     error
 	)
 
@@ -53,12 +53,11 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 		handleResponse(ctx, h.log, "error is while you don't you area and you have to area>zero ---~~~~~~~ERROR===", http.StatusBadRequest, "error is while you don't you area and you have to area>zero ")
 		return
 	}
-	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.OrderRequest{
+	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.CreateOrderReq{
 		UserId:     cast.ToString(userID),
 		ServiceId:  cast.ToString(serviceID),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),
-		Status:     payload.Status,
 	})
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while create  order by  storage ---~~~~~~~ERROR===", http.StatusInternalServerError, err.Error())
@@ -87,13 +86,13 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 // @Failure      500  {object}  domain.Response
 func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 	var (
-		payload domain.OrderRequest
+		payload domain.Order
 		err     error
 		id      string
 	)
 
 	id = ctx.Param("id")
-	orderId, err := ParseUuId(id, h.log)
+	ID, err := ParseUuId(id, h.log)
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while parse to uuid  id that is order_id ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
 		return
@@ -104,7 +103,7 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 		handleResponse(ctx, h.log, "Failed to parse payload body", http.StatusBadRequest, err.Error())
 		return
 	}
-	userID, err := ParseUuId(payload.UserID, h.log)
+	Fullname, err := ParseUuId(payload.Client.Fullname, h.log)
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while parsing to uuid in userID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
 		return
@@ -123,10 +122,9 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 		return
 	}
 
-	response, err := h.services.OrderService().UpdateOrder(ctx, &pbp.Order{
-		Id:         cast.ToString(orderId),
-		UserId:     cast.ToString(userID),
-		ServiceId:  cast.ToString(serviceID),
+	response, err := h.services.OrderService().UpdateOrder(ctx, &pbp.UpdateOrderReq{
+		Latitude:   cast.ToFloat32(payload.Latitude),
+		Longitude:  cast.ToFloat32(payload.Longitude),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),
 		Status:     payload.Status,
@@ -238,7 +236,7 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 	page := cast.ToInt(c.DefaultQuery("page", defaultPage))
 	limit := cast.ToInt(c.DefaultQuery("limit", defaultLimit))
 	search := fmt.Sprintf("%%%s%%", c.DefaultQuery("search", ""))
-	response, err := h.services.OrderService().GetAllOrder(context.Background(), &pbp.GetListRequest{
+	response, err := h.services.OrderService().GetAllOrder(context.Background(), &pbp.GetAllOrdersReq{
 		Page:   int64((page - 1) * limit),
 		Limit:  int64(limit),
 		Search: search,
