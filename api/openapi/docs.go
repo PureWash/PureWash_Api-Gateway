@@ -476,7 +476,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "get all courier_orders",
+                "description": "get all orders",
                 "consumes": [
                     "application/json"
                 ],
@@ -486,7 +486,7 @@ const docTemplate = `{
                 "tags": [
                     "Order"
                 ],
-                "summary": "Get all courier_orders",
+                "summary": "Get all orders",
                 "parameters": [
                     {
                         "type": "string",
@@ -499,31 +499,13 @@ const docTemplate = `{
                         "description": "limit",
                         "name": "limit",
                         "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "status",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "time",
-                        "name": "time",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "full_name",
-                        "name": "full_name",
-                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.GetOrdersResp"
+                            "$ref": "#/definitions/pure_wash.GetOrdersResp"
                         }
                     },
                     "400": {
@@ -572,15 +554,15 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.OrderParams"
+                            "$ref": "#/definitions/pure_wash.CreateOrderReq"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/domain.CreateOrdResp"
+                            "$ref": "#/definitions/pure_wash.CreateOrderResp"
                         }
                     },
                     "400": {
@@ -635,7 +617,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.GetOrderResp"
+                            "$ref": "#/definitions/pure_wash.GetOrderResp"
                         }
                     },
                     "400": {
@@ -689,7 +671,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.UpdateOrderReq"
+                            "$ref": "#/definitions/pure_wash.UpdateOrderReq"
                         }
                     }
                 ],
@@ -697,7 +679,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.UpdateOrderResp"
+                            "$ref": "#/definitions/pure_wash.UpdateOrderResp"
                         }
                     },
                     "400": {
@@ -781,7 +763,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "get all orders",
+                "description": "get all courier_orders",
                 "consumes": [
                     "application/json"
                 ],
@@ -791,7 +773,7 @@ const docTemplate = `{
                 "tags": [
                     "Order"
                 ],
-                "summary": "Get all orders",
+                "summary": "Get all courier_orders",
                 "parameters": [
                     {
                         "type": "string",
@@ -804,13 +786,31 @@ const docTemplate = `{
                         "description": "limit",
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "time",
+                        "name": "time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "full_name",
+                        "name": "full_name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.GetOrdersResp"
+                            "$ref": "#/definitions/pure_wash.GetOrdersResp"
                         }
                     },
                     "400": {
@@ -1212,23 +1212,6 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.Client": {
-            "type": "object",
-            "properties": {
-                "full_name": {
-                    "type": "string"
-                },
-                "latitude": {
-                    "type": "number"
-                },
-                "longitude": {
-                    "type": "number"
-                },
-                "phone_number": {
-                    "type": "string"
-                }
-            }
-        },
         "domain.Company": {
             "type": "object",
             "properties": {
@@ -1257,91 +1240,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                }
-            }
-        },
-        "domain.CreateOrdResp": {
-            "type": "object",
-            "properties": {
-                "area": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "total_price": {
-                    "type": "number"
-                }
-            }
-        },
-        "domain.GetOrderResp": {
-            "type": "object",
-            "properties": {
-                "area": {
-                    "type": "number"
-                },
-                "client_info": {
-                    "$ref": "#/definitions/domain.Client"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "services_info": {
-                    "$ref": "#/definitions/domain.Services"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "total_price": {
-                    "type": "number"
-                }
-            }
-        },
-        "domain.GetOrdersResp": {
-            "type": "object",
-            "properties": {
-                "limit": {
-                    "type": "integer"
-                },
-                "order_info": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.Order"
-                    }
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "total_count": {
-                    "type": "integer"
-                }
-            }
-        },
-        "domain.Order": {
-            "type": "object",
-            "properties": {
-                "client_info": {
-                    "$ref": "#/definitions/domain.Client"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.OrderParams": {
-            "type": "object",
-            "properties": {
-                "area": {
-                    "type": "number"
-                },
-                "service_id": {
-                    "type": "string"
-                },
-                "total_price": {
-                    "type": "number"
                 }
             }
         },
@@ -1400,17 +1298,6 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.Services": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "tariffs": {
-                    "type": "string"
-                }
-            }
-        },
         "domain.ServicesResponse": {
             "type": "object",
             "properties": {
@@ -1428,11 +1315,142 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.UpdateOrderReq": {
+        "pure_wash.Client": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "pure_wash.CreateOrderReq": {
             "type": "object",
             "properties": {
                 "area": {
                     "type": "number"
+                },
+                "client": {
+                    "$ref": "#/definitions/pure_wash.Client"
+                },
+                "service_id": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "pure_wash.CreateOrderResp": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "pure_wash.GetOrderResp": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "client": {
+                    "$ref": "#/definitions/pure_wash.Client"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "service": {
+                    "$ref": "#/definitions/pure_wash.Services"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "pure_wash.GetOrdersResp": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "orders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pure_wash.Order"
+                    }
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pure_wash.Order": {
+            "type": "object",
+            "properties": {
+                "client": {
+                    "$ref": "#/definitions/pure_wash.Client"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "pure_wash.Services": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "tariffs": {
+                    "type": "string"
+                }
+            }
+        },
+        "pure_wash.UpdateOrderReq": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
                 },
                 "latitude": {
                     "type": "number"
@@ -1451,7 +1469,7 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.UpdateOrderResp": {
+        "pure_wash.UpdateOrderResp": {
             "type": "object",
             "properties": {
                 "area": {

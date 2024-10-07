@@ -21,7 +21,7 @@ func setUpApi(h *Handler) {
 		pureWash.POST("/order", h.CreateOrderHandler)
 		pureWash.GET("/order/:id", h.GetOrderHandler)
 		pureWash.GET("/orders", h.GetAllOrders)
-		pureWash.GET("/courier_orders", h.GetAllForCourierOrders)
+		pureWash.GET("/courier_orders", h.GetAllOrderForCouriers)
 		pureWash.PUT("/order/:id", h.UpdateOrderHandler)
 		pureWash.DELETE("/order/:id", h.DeleteOrderHandler)
 

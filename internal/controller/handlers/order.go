@@ -3,7 +3,6 @@ package handlers
 import (
 	pbp "api_gateway/genproto/pure_wash"
 	"api_gateway/internal/domain"
-	token "api_gateway/internal/pkg/jwt"
 	"context"
 	"net/http"
 
@@ -19,29 +18,22 @@ import (
 // @Tags         Order
 // @Accept       json
 // @Produce      json
-// @Param        order body domain.OrderParams true "Order Request"
-// @Success      200  {object}  domain.CreateOrdResp
+// @Param        order body pure_wash.CreateOrderReq true "Order Request"
+// @Success      201  {object}  pure_wash.CreateOrderResp
 // @Failure      400  {object}  domain.Response
 // @Failure      401  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
 func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 	var (
-		payload domain.OrderParams
+		payload pbp.CreateOrderReq
 		err     error
 	)
-
 	if err = ctx.ShouldBindJSON(&payload); err != nil {
 		handleResponse(ctx, h.log, "Invalid order data", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	claims, err := token.GetUserByClaims(ctx, h.log)
-	if err != nil {
-		handleResponse(ctx, h.log, "Unauthorized: invalid token", http.StatusUnauthorized, err.Error())
-		return
-	}
-
-	serviceID, err := ParseUuId(payload.ServiceId, h.log)
+	_, err = ParseUuId(payload.ServiceId, h.log)
 	if err != nil {
 		handleResponse(ctx, h.log, "Invalid service ID format", http.StatusBadRequest, err.Error())
 		return
@@ -56,17 +48,7 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 		payload.TotalPrice = 0
 	}
 
-	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.CreateOrderReq{
-		Client: &pbp.Client{
-			FullName:    claims.FullName,
-			PhoneNumber: claims.PhoneNumber,
-			Longitude:   claims.LongAttitude,
-			Latitude:    claims.Latitude,
-		},
-		ServiceId:  cast.ToString(serviceID),
-		Area:       payload.Area,
-		TotalPrice: float32(payload.TotalPrice),
-	})
+	response, err := h.services.OrderService().CreateOrder(ctx, &payload)
 	if err != nil {
 		handleResponse(ctx, h.log, "Failed to create order", http.StatusInternalServerError, err.Error())
 		return
@@ -84,14 +66,14 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "Order  ID"
-// @Param        order body domain.UpdateOrderReq true "Order Type Update Request"
-// @Success      200  {object}  domain.UpdateOrderResp
+// @Param        order body pure_wash.UpdateOrderReq true "Order Type Update Request"
+// @Success      200  {object}  pure_wash.UpdateOrderResp
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
 func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 	var (
-		payload domain.UpdateOrderReq
+		payload pbp.UpdateOrderReq
 		err     error
 		id      string
 	)
@@ -181,7 +163,7 @@ func (h *Handler) DeleteOrderHandler(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "Order  ID"
-// @Success      200  {object}  domain.GetOrderResp
+// @Success      200  {object}  pure_wash.GetOrderResp
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
@@ -207,9 +189,9 @@ func (h *Handler) GetOrderHandler(ctx *gin.Context) {
 	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, response)
 }
 
-// GetAllOrders godoc
+// GetAllOrderForCouriers godoc
 // @Security     ApiKeyAuth
-// @Router       /api/orders [GET]
+// @Router       /api/courier_orders [GET]
 // @Summary      Get all orders
 // @Description  get all orders
 // @Tags         Order
@@ -217,11 +199,11 @@ func (h *Handler) GetOrderHandler(ctx *gin.Context) {
 // @Produce      json
 // @Param        page query string false "page"
 // @Param        limit query string false "limit"
-// @Success      200  {object}  domain.GetOrdersResp
+// @Success      200  {object}  pure_wash.GetOrdersResp
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-func (h Handler) GetAllOrders(c *gin.Context) {
+func (h Handler) GetAllOrderForCouriers(c *gin.Context) {
 	var (
 		err          error
 		defaultPage  = "1"
@@ -244,9 +226,9 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 	handleResponse(c, h.log, "SUCCESSES", http.StatusOK, response)
 }
 
-// GetAllForCourierOrders godoc
+// GetAllOrders godoc
 // @Security     ApiKeyAuth
-// @Router       /api/courier_orders [GET]
+// @Router       /api/orders [GET]
 // @Summary      Get all courier_orders
 // @Description  get all courier_orders
 // @Tags         Order
@@ -257,11 +239,11 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 // @Param        status query string false "status"
 // @Param        time query string false "time"
 // @Param        full_name query string false "full_name"
-// @Success      200  {object}  domain.GetOrdersResp
+// @Success      200  {object}  pure_wash.GetOrdersResp
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
-func (h Handler) GetAllForCourierOrders(c *gin.Context) {
+func (h Handler) GetAllOrders(c *gin.Context) {
 	var (
 		err          error
 		defaultPage  = "1"
