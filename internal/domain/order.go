@@ -46,6 +46,7 @@ type OrderParams struct {
 	TotalPrice float64 `json:"total_price"`
 }
 type CreateOrdResp struct {
+	ClientInfo Client  `json:"client_info"`
 	ID         string  `json:"id"`
 	Area       float32 `json:"area"`
 	Status     string  `json:"status"`
