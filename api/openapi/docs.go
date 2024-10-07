@@ -469,14 +469,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/order": {
-            "post": {
+        "/api/courier_orders": {
+            "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Order",
+                "description": "get all courier_orders",
                 "consumes": [
                     "application/json"
                 ],
@@ -486,23 +486,44 @@ const docTemplate = `{
                 "tags": [
                     "Order"
                 ],
-                "summary": "Order",
+                "summary": "Get all courier_orders",
                 "parameters": [
                     {
-                        "description": "Order  Request",
-                        "name": "order",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.OrderRequest"
-                        }
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "time",
+                        "name": "time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "full_name",
+                        "name": "full_name",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.Order"
+                            "$ref": "#/definitions/domain.GetOrdersResp"
                         }
                     },
                     "400": {
@@ -513,6 +534,63 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/order": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Endpoint to create a new order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Create an order",
+                "parameters": [
+                    {
+                        "description": "Order Request",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.OrderParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateOrdResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/domain.Response"
                         }
@@ -557,7 +635,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.Order"
+                            "$ref": "#/definitions/domain.GetOrderResp"
                         }
                     },
                     "400": {
@@ -611,7 +689,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.OrderRequest"
+                            "$ref": "#/definitions/domain.UpdateOrderReq"
                         }
                     }
                 ],
@@ -619,7 +697,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.Order"
+                            "$ref": "#/definitions/domain.UpdateOrderResp"
                         }
                     },
                     "400": {
@@ -726,20 +804,13 @@ const docTemplate = `{
                         "description": "limit",
                         "name": "limit",
                         "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "search",
-                        "name": "search",
-                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/domain.GetOrdersResp"
                         }
                     },
                     "400": {
@@ -1141,6 +1212,23 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.Client": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Company": {
             "type": "object",
             "properties": {
@@ -1172,33 +1260,78 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.Order": {
+        "domain.CreateOrdResp": {
             "type": "object",
             "properties": {
                 "area": {
                     "type": "number"
-                },
-                "createdAt": {
-                    "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "service_id": {
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "domain.GetOrderResp": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "client_info": {
+                    "$ref": "#/definitions/domain.Client"
+                },
+                "id": {
                     "type": "string"
+                },
+                "services_info": {
+                    "$ref": "#/definitions/domain.Services"
                 },
                 "status": {
                     "type": "string"
                 },
                 "total_price": {
                     "type": "number"
+                }
+            }
+        },
+        "domain.GetOrdersResp": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
                 },
-                "user_id": {
+                "order_info": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Order"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.Order": {
+            "type": "object",
+            "properties": {
+                "client_info": {
+                    "$ref": "#/definitions/domain.Client"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
         },
-        "domain.OrderRequest": {
+        "domain.OrderParams": {
             "type": "object",
             "properties": {
                 "area": {
@@ -1207,14 +1340,8 @@ const docTemplate = `{
                 "service_id": {
                     "type": "string"
                 },
-                "status": {
-                    "type": "string"
-                },
                 "total_price": {
                     "type": "number"
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         },
@@ -1273,6 +1400,17 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.Services": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "tariffs": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.ServicesResponse": {
             "type": "object",
             "properties": {
@@ -1287,6 +1425,49 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/domain.Service"
                     }
+                }
+            }
+        },
+        "domain.UpdateOrderReq": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "domain.UpdateOrderResp": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         }
