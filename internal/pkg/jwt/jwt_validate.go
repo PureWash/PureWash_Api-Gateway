@@ -2,6 +2,7 @@ package token
 
 import (
 	"api_gateway/internal/configs"
+	"api_gateway/internal/domain"
 	"api_gateway/internal/pkg/logger"
 	"fmt"
 	"strings"
@@ -18,7 +19,6 @@ func ValidateToken(tokenStr string) (bool, error) {
 	}
 	return true, nil
 }
-
 
 func ExtractClaims(tokenStr string) (jwt.MapClaims, error) {
 	tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
@@ -47,7 +47,8 @@ func ExtractClaims(tokenStr string) (jwt.MapClaims, error) {
 	}
 	return claims, nil
 }
-func GetUserIdByClaims(c *gin.Context, log logger.ILogger) (interface{}, error) {
+
+func GetUserByClaims(c *gin.Context, log logger.ILogger) (*domain.Claims, error) {
 	claimsRaw, exists := c.Get("claims")
 	if !exists {
 		log.Error("user not found")
@@ -65,5 +66,35 @@ func GetUserIdByClaims(c *gin.Context, log logger.ILogger) (interface{}, error) 
 		log.Error("user_id not found or is not a string")
 		return nil, fmt.Errorf("user_id not found or is not a string")
 	}
-	return userId, nil
+	fullName, ok := claims["full_name"].(string)
+	if !ok {
+		log.Error("user_id not found or is not a string")
+		return nil, fmt.Errorf("user_id not found or is not a string")
+	}
+
+	phoneNumber, ok := claims["phone_number"].(string)
+	if !ok {
+		log.Error("user_id not found or is not a string")
+		return nil, fmt.Errorf("user_id not found or is not a string")
+	}
+
+	longitude, ok := claims["longitude"].(float64) // float64 is the default type for JSON numbers
+	if !ok {
+		log.Error("user_id not found or is not a string")
+		return nil, fmt.Errorf("user_id not found or is not a string")
+	}
+
+	latitude, ok := claims["latitude"].(float64)
+	if !ok {
+		log.Error("user_id not found or is not a string")
+		return nil, fmt.Errorf("user_id not found or is not a string")
+	}
+
+	return &domain.Claims{
+		ID:           userId,
+		FullName:     fullName,
+		PhoneNumber:  phoneNumber,
+		LongAttitude: float32(longitude),
+		Latitude:     float32(latitude),
+	}, nil
 }

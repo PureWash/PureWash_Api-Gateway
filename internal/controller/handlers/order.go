@@ -1,74 +1,78 @@
 package handlers
 
 import (
-	pbp "api_gateway/genproto/carpet_service"
+	pbp "api_gateway/genproto/pure_wash"
 	"api_gateway/internal/domain"
+	token "api_gateway/internal/pkg/jwt"
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 )
 
-// CreateOrderHandler   godoc
+// CreateOrderHandler godoc
 // @Router       /api/order [POST]
 // @Security     ApiKeyAuth
-// @Summary      Order
-// @Description  Order
+// @Summary      Create an order
+// @Description  Endpoint to create a new order
 // @Tags         Order
 // @Accept       json
 // @Produce      json
-// @Param        order body domain.OrderRequest true "Order  Request"
-// @Success      200  {object}  domain.Order
+// @Param        order body domain.OrderParams true "Order Request"
+// @Success      200  {object}  domain.CreateOrdResp
 // @Failure      400  {object}  domain.Response
-// @Failure      404  {object}  domain.Response
+// @Failure      401  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
 func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 	var (
-		payload domain.OrderRequest
+		payload domain.OrderParams
 		err     error
 	)
 
-	err = ctx.ShouldBindJSON(&payload)
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while reading order information by  body ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
-		return
-	}
-	userID, err := ParseUuId(payload.UserID, h.log)
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while parsing to uuid in userID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
+	if err = ctx.ShouldBindJSON(&payload); err != nil {
+		handleResponse(ctx, h.log, "Invalid order data", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	serviceID, err := ParseUuId(payload.ServiceID, h.log)
+	claims, err := token.GetUserByClaims(ctx, h.log)
 	if err != nil {
-		handleResponse(ctx, h.log, "error is while parsing to uuid in serviceID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
+		handleResponse(ctx, h.log, "Unauthorized: invalid token", http.StatusUnauthorized, err.Error())
 		return
 	}
-	if payload.TotalPrice <= 0 {
+
+	serviceID, err := ParseUuId(payload.ServiceId, h.log)
+	if err != nil {
+		handleResponse(ctx, h.log, "Invalid service ID format", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if payload.Area <= 0 {
+		handleResponse(ctx, h.log, "Area must be greater than zero", http.StatusBadRequest, "Invalid area")
+		return
+	}
+
+	if payload.TotalPrice < 0 {
 		payload.TotalPrice = 0
 	}
-	if payload.Area < 0 {
-		handleResponse(ctx, h.log, "error is while you don't you area and you have to area>zero ---~~~~~~~ERROR===", http.StatusBadRequest, "error is while you don't you area and you have to area>zero ")
-		return
-	}
-	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.OrderRequest{
-		UserId:     cast.ToString(userID),
+
+	response, err := h.services.OrderService().CreateOrder(ctx, &pbp.CreateOrderReq{
+		Client: &pbp.Client{
+			FullName:    claims.FullName,
+			PhoneNumber: claims.PhoneNumber,
+			Longitude:   claims.LongAttitude,
+			Latitude:    claims.Latitude,
+		},
 		ServiceId:  cast.ToString(serviceID),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),
-		Status:     payload.Status,
 	})
 	if err != nil {
-		handleResponse(ctx, h.log, "error is while create  order by  storage ---~~~~~~~ERROR===", http.StatusInternalServerError, err.Error())
+		handleResponse(ctx, h.log, "Failed to create order", http.StatusInternalServerError, err.Error())
 		return
 	}
-	handleResponse(ctx, h.log, "SUCCESSES", http.StatusCreated, gin.H{
-		"order":   response,
-		"message": "Order added successfully",
-		"success": true,
-	})
+
+	handleResponse(ctx, h.log, "Order created successfully", http.StatusCreated, response)
 }
 
 // UpdateOrderHandler   godoc
@@ -80,20 +84,20 @@ func (h *Handler) CreateOrderHandler(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "Order  ID"
-// @Param        order body domain.OrderRequest true "Order Type Update Request"
-// @Success      200  {object}  domain.Order
+// @Param        order body domain.UpdateOrderReq true "Order Type Update Request"
+// @Success      200  {object}  domain.UpdateOrderResp
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
 func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 	var (
-		payload domain.OrderRequest
+		payload domain.UpdateOrderReq
 		err     error
 		id      string
 	)
 
 	id = ctx.Param("id")
-	orderId, err := ParseUuId(id, h.log)
+	ID, err := ParseUuId(id, h.log)
 	if err != nil {
 		handleResponse(ctx, h.log, "error is while parse to uuid  id that is order_id ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
 		return
@@ -104,17 +108,7 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 		handleResponse(ctx, h.log, "Failed to parse payload body", http.StatusBadRequest, err.Error())
 		return
 	}
-	userID, err := ParseUuId(payload.UserID, h.log)
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while parsing to uuid in userID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
-		return
-	}
 
-	serviceID, err := ParseUuId(payload.ServiceID, h.log)
-	if err != nil {
-		handleResponse(ctx, h.log, "error is while parsing to uuid in serviceID ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
-		return
-	}
 	if payload.TotalPrice <= 0 {
 		payload.TotalPrice = 0
 	}
@@ -123,10 +117,10 @@ func (h *Handler) UpdateOrderHandler(ctx *gin.Context) {
 		return
 	}
 
-	response, err := h.services.OrderService().UpdateOrder(ctx, &pbp.Order{
-		Id:         cast.ToString(orderId),
-		UserId:     cast.ToString(userID),
-		ServiceId:  cast.ToString(serviceID),
+	response, err := h.services.OrderService().UpdateOrder(ctx, &pbp.UpdateOrderReq{
+		Id:         cast.ToString(ID),
+		Latitude:   cast.ToFloat32(payload.Latitude),
+		Longitude:  cast.ToFloat32(payload.Longitude),
 		Area:       payload.Area,
 		TotalPrice: float32(payload.TotalPrice),
 		Status:     payload.Status,
@@ -187,7 +181,7 @@ func (h *Handler) DeleteOrderHandler(ctx *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "Order  ID"
-// @Success      200  {object}  domain.Order
+// @Success      200  {object}  domain.GetOrderResp
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
@@ -223,8 +217,7 @@ func (h *Handler) GetOrderHandler(ctx *gin.Context) {
 // @Produce      json
 // @Param        page query string false "page"
 // @Param        limit query string false "limit"
-// @Param        search query string false "search"
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  domain.GetOrdersResp
 // @Failure      400  {object}  domain.Response
 // @Failure      404  {object}  domain.Response
 // @Failure      500  {object}  domain.Response
@@ -237,11 +230,57 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 
 	page := cast.ToInt(c.DefaultQuery("page", defaultPage))
 	limit := cast.ToInt(c.DefaultQuery("limit", defaultLimit))
-	search := fmt.Sprintf("%%%s%%", c.DefaultQuery("search", ""))
+	//search := fmt.Sprintf("%%%s%%", c.DefaultQuery("search", ""))
 	response, err := h.services.OrderService().GetAllOrder(context.Background(), &pbp.GetListRequest{
-		Page:   int64((page - 1) * limit),
-		Limit:  int64(limit),
-		Search: search,
+		Page:  int64((page - 1) * limit),
+		Limit: int64(limit),
+		//Search: search,
+	})
+	if err != nil {
+		handleResponse(c, h.log, "error is while getting all baskets", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	handleResponse(c, h.log, "SUCCESSES", http.StatusOK, response)
+}
+
+// GetAllForCourierOrders godoc
+// @Security     ApiKeyAuth
+// @Router       /api/courier_orders [GET]
+// @Summary      Get all courier_orders
+// @Description  get all courier_orders
+// @Tags         Order
+// @Accept       json
+// @Produce      json
+// @Param        page query string false "page"
+// @Param        limit query string false "limit"
+// @Param        status query string false "status"
+// @Param        time query string false "time"
+// @Param        full_name query string false "full_name"
+// @Success      200  {object}  domain.GetOrdersResp
+// @Failure      400  {object}  domain.Response
+// @Failure      404  {object}  domain.Response
+// @Failure      500  {object}  domain.Response
+func (h Handler) GetAllForCourierOrders(c *gin.Context) {
+	var (
+		err          error
+		defaultPage  = "1"
+		defaultLimit = "10"
+	)
+
+	page := cast.ToInt(c.DefaultQuery("page", defaultPage))
+	limit := cast.ToInt(c.DefaultQuery("limit", defaultLimit))
+	req := domain.GetAllOrderReq{
+		FullName: c.DefaultQuery("full_name", ""),
+		Ontime:   c.DefaultQuery("time", ""),
+		Status:   c.DefaultQuery("status", ""),
+	}
+	response, err := h.services.OrderService().GetAllOrderForCurier(context.Background(), &pbp.GetAllOrdersReq{
+		Offset:   int32((page - 1) * limit),
+		Limit:    int32(limit),
+		FullName: req.FullName,
+		OnTime:   req.Ontime,
+		Status:   req.Status,
 	})
 	if err != nil {
 		handleResponse(c, h.log, "error is while getting all baskets", http.StatusInternalServerError, err.Error())

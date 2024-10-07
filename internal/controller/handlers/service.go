@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	pbp "api_gateway/genproto/carpet_service"
+	pbp "api_gateway/genproto/pure_wash"
 	"api_gateway/internal/domain"
 	"context"
-	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
-	"net/http"
 )
 
 // CreateServiceHandler   godoc
@@ -206,11 +206,9 @@ func (h Handler) GetAllServices(c *gin.Context) {
 
 	page := cast.ToInt(c.DefaultQuery("page", defaultPage))
 	limit := cast.ToInt(c.DefaultQuery("limit", defaultLimit))
-	search := fmt.Sprintf("%%%s%%", c.DefaultQuery("search", ""))
 	response, err := h.services.ServiceService().GetAllService(context.Background(), &pbp.GetListRequest{
-		Page:   int64((page - 1) * limit),
-		Limit:  int64(limit),
-		Search: search,
+		Page:  int64((page - 1) * limit),
+		Limit: int64(limit),
 	})
 	if err != nil {
 		handleResponse(c, h.log, "error is while getting all baskets", http.StatusInternalServerError, err.Error())

@@ -1,8 +1,8 @@
 package grpc
 
 import (
-	pbp "api_gateway/genproto/carpet_service"
-	pbu "api_gateway/genproto/user_service"
+	pbp "api_gateway/genproto/pure_wash"
+	pbu "api_gateway/genproto/user"
 	//"api_gateway/genproto/pbp"
 	"api_gateway/internal/configs"
 	"api_gateway/internal/pkg/logger"

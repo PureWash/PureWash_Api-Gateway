@@ -1,1 +1,0 @@
-# PureWash_Protos

@@ -21,3 +21,11 @@ type UpdatePasswordRequest struct {
 	OldPassword string `bson:"old_password"`
 	NewPassword string `bson:"new_password"`
 }
+
+type Claims struct {
+	ID           string  `json:"id"`
+	FullName     string  `json:"full_name"`
+	PhoneNumber  string  `json:"phone_number"`
+	LongAttitude float32 `json:"long_attitude"`
+	Latitude     float32 `json:"latitude"`
+}
