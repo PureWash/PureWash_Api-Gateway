@@ -91,7 +91,7 @@ func (h *Handler) Run() {
 	)
 	h.log.Info("server is running: ", logger.Any("PORT", h.cnf.HTTPPort))
 
-	if err := h.engine.Run(fmt.Sprintf("%s", h.cnf.HTTPPort)); err != nil {
+	if err := h.engine.Run(fmt.Sprintf(":%s", h.cnf.HTTPPort)); err != nil {
 		h.log.Error("failed to run server", logger.Error(err))
 	}
 

@@ -5,6 +5,7 @@ import (
 	"api_gateway/internal/domain"
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -257,11 +258,21 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 		Ontime:   c.DefaultQuery("time", ""),
 		Status:   c.DefaultQuery("status", ""),
 	}
+
+	var ontime time.Time
+	if req.Ontime != "" {
+		ontime, err = TimeParse(req.Ontime, h.log)
+		if err != nil {
+			handleResponse(c, h.log, "error is while getting all baskets", http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
 	response, err := h.services.OrderService().GetAllOrderForCurier(context.Background(), &pbp.GetAllOrdersReq{
 		Offset:   int32((page - 1) * limit),
 		Limit:    int32(limit),
 		FullName: req.FullName,
-		OnTime:   req.Ontime,
+		OnTime:   ontime.Format(time.RFC3339),
 		Status:   req.Status,
 	})
 	if err != nil {
