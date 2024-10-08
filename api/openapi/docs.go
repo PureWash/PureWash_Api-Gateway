@@ -476,7 +476,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "get all orders",
+                "description": "get all couriers orders",
                 "consumes": [
                     "application/json"
                 ],
@@ -486,7 +486,7 @@ const docTemplate = `{
                 "tags": [
                     "Order"
                 ],
-                "summary": "Get all orders",
+                "summary": "Get all couriers orders",
                 "parameters": [
                     {
                         "type": "string",
@@ -763,7 +763,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "get all courier_orders",
+                "description": "get all orders",
                 "consumes": [
                     "application/json"
                 ],
@@ -773,7 +773,7 @@ const docTemplate = `{
                 "tags": [
                     "Order"
                 ],
-                "summary": "Get all courier_orders",
+                "summary": "Get all orders",
                 "parameters": [
                     {
                         "type": "string",

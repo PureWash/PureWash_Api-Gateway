@@ -4,8 +4,8 @@ import (
 	pbp "api_gateway/genproto/pure_wash"
 	"api_gateway/internal/domain"
 	"context"
+	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -193,8 +193,8 @@ func (h *Handler) GetOrderHandler(ctx *gin.Context) {
 // GetAllOrderForCouriers godoc
 // @Security     ApiKeyAuth
 // @Router       /api/courier_orders [GET]
-// @Summary      Get all orders
-// @Description  get all orders
+// @Summary      Get all couriers orders
+// @Description  get all couriers orders
 // @Tags         Order
 // @Accept       json
 // @Produce      json
@@ -214,6 +214,7 @@ func (h Handler) GetAllOrderForCouriers(c *gin.Context) {
 	page := cast.ToInt(c.DefaultQuery("page", defaultPage))
 	limit := cast.ToInt(c.DefaultQuery("limit", defaultLimit))
 	//search := fmt.Sprintf("%%%s%%", c.DefaultQuery("search", ""))
+	fmt.Println(defaultLimit, defaultPage)
 	response, err := h.services.OrderService().GetAllOrder(context.Background(), &pbp.GetListRequest{
 		Page:  int64((page - 1) * limit),
 		Limit: int64(limit),
@@ -230,8 +231,8 @@ func (h Handler) GetAllOrderForCouriers(c *gin.Context) {
 // GetAllOrders godoc
 // @Security     ApiKeyAuth
 // @Router       /api/orders [GET]
-// @Summary      Get all courier_orders
-// @Description  get all courier_orders
+// @Summary      Get all orders
+// @Description  get all orders
 // @Tags         Order
 // @Accept       json
 // @Produce      json
@@ -259,20 +260,11 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 		Status:   c.DefaultQuery("status", ""),
 	}
 
-	var ontime time.Time
-	if req.Ontime != "" {
-		ontime, err = TimeParse(req.Ontime, h.log)
-		if err != nil {
-			handleResponse(c, h.log, "error is while getting all baskets", http.StatusBadRequest, err.Error())
-			return
-		}
-	}
-
 	response, err := h.services.OrderService().GetAllOrderForCurier(context.Background(), &pbp.GetAllOrdersReq{
 		Offset:   int32((page - 1) * limit),
 		Limit:    int32(limit),
 		FullName: req.FullName,
-		OnTime:   ontime.Format(time.RFC3339),
+		OnTime:   req.Ontime,
 		Status:   req.Status,
 	})
 	if err != nil {
