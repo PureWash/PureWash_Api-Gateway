@@ -274,3 +274,42 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 
 	handleResponse(c, h.log, "SUCCESSES", http.StatusOK, response)
 }
+
+// UpdateOrderStatusHandler   godoc
+// @Router       /api/order_status/{id} [put]
+// @Security     ApiKeyAuth
+// @Summary      Update  Order
+// @Description  Updates the details of an existing Order
+// @Tags         Order
+// @Accept       json
+// @Produce      json
+// @Param        id path string true "Order  ID"
+// @Param        status query string false "status"
+// @Success      200  {object}  string
+// @Failure      400  {object}  domain.Response
+// @Failure      404  {object}  domain.Response
+// @Failure      500  {object}  domain.Response
+func (h *Handler) UpdateOrderStatusHandler(ctx *gin.Context) {
+	var (
+		err    error
+		id     string
+		status string
+	)
+
+	id = ctx.Param("id")
+	status = ctx.Query("status")
+	ID, err := ParseUuId(id, h.log)
+	if err != nil {
+		handleResponse(ctx, h.log, "error is while parse to uuid  id that is order_id ---~~~~~~~ERROR===", http.StatusBadRequest, err.Error())
+		return
+	}
+	_, err = h.services.OrderService().UpdateOrderStatus(ctx, &pbp.StatusOrderReq{
+		Id:     cast.ToString(ID),
+		Status: status,
+	})
+	if err != nil {
+		handleResponse(ctx, h.log, "Failed to update Order ", http.StatusInternalServerError, err.Error())
+		return
+	}
+	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, fmt.Errorf("success updated %s", status))
+}
