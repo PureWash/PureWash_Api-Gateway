@@ -786,14 +786,15 @@ const docTemplate = `{
                         "type": "string",
                         "description": "status",
                         "name": "status",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/domain.Response"
                         }
                     },
                     "400": {
