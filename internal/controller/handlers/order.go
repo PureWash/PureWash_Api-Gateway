@@ -311,5 +311,5 @@ func (h *Handler) UpdateOrderStatusHandler(ctx *gin.Context) {
 		handleResponse(ctx, h.log, "Failed to update Order ", http.StatusInternalServerError, err.Error())
 		return
 	}
-	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, fmt.Errorf("%s status updated successfully", resp.GetId()))
+	handleResponse(ctx, h.log, "SUCCESSES", http.StatusOK, fmt.Sprintf("%s status updated successfully", resp.GetId()))
 }
