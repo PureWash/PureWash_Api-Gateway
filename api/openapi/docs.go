@@ -1380,6 +1380,9 @@ const docTemplate = `{
         "pure_wash.Client": {
             "type": "object",
             "properties": {
+                "client_id": {
+                    "type": "string"
+                },
                 "full_name": {
                     "type": "string"
                 },
